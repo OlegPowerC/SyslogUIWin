@@ -45,12 +45,12 @@ void __fastcall TMainW::SyslogMessageGridDrawDataCell(TObject *Sender, const TRe
 		{
 			if(sMap.find(Field->AsInteger) != sMap.end())
 			{
-				TMainW::SyslogMessageGrid->Canvas->Brush->Color = sMap.at(Field->AsInteger);
+				SyslogMessageGrid->Canvas->Brush->Color = sMap.at(Field->AsInteger);
 			}
 
 		}
 	}
-	TMainW::SyslogMessageGrid->DefaultDrawDataCell(Rect, Field, State);
+	SyslogMessageGrid->DefaultDrawDataCell(Rect, Field, State);
 }
 //---------------------------------------------------------------------------
 
@@ -58,18 +58,32 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 {   System::String HeaderLikeStr = "";
 	System::String BodyLikeStr = "";
 	System::String IpLikeStr = "";
+	System::String NotKeyW = "";
 	System::String SeverityMax = " AND severity <= " + IntToStr(SeverityMaxCb->ItemIndex) + " ";
-	if(TMainW::HeaderFinde->Text.Length() >= 2)
+	if(HeaderFinde->Text.Length() >= 2)
 	{
-		HeaderLikeStr = " AND headertext LIKE '%" + TMainW::HeaderFinde->Text + "%' ";
+		if(CBHeaderExclude->Checked){
+			NotKeyW = " NOT ";
+		}
+		HeaderLikeStr = " AND headertext " +NotKeyW+"LIKE '%" + HeaderFinde->Text + "%' ";
+		NotKeyW = "";
 	}
-	if(TMainW::BodyFinde->Text.Length() >= 2)
+
+	if(BodyFinde->Text.Length() >= 2)
 	{
-		BodyLikeStr = " AND msgbody LIKE '%" + TMainW::BodyFinde->Text + "%' ";
+		if(CBBodyExclude->Checked){
+			NotKeyW = " NOT ";
+		}
+		BodyLikeStr = " AND msgbody " +NotKeyW+"LIKE '%" + BodyFinde->Text + "%' ";
+		NotKeyW = "";
 	}
-	if(TMainW::SenderIpe->Text.Length() >= 2)
+	if(SenderIpe->Text.Length() >= 2)
 	{
-		HeaderLikeStr = " AND senderip LIKE '%" + TMainW::SenderIpe->Text + "%' ";
+		if(CBIPExclude->Checked){
+			NotKeyW = " NOT ";
+		}
+		IpLikeStr = " AND senderip " +NotKeyW+"LIKE '%" + SenderIpe->Text + "%' ";
+        NotKeyW = "";
 	}
 
 
@@ -82,15 +96,29 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 	System::String SqlFromParam = DateFromStr + " " + TimeFromStr;
 	System::String SqlToParam = DateToStr + " " + TimeToStr;
 	System::String SQLQuery = "SELECT id,addedtime,senderip,severity,facility,headertext,msgbody FROM syslog WHERE addedtime BETWEEN '" +  SqlToParam + "' AND '" + SqlFromParam + "'"+ HeaderLikeStr + BodyLikeStr + IpLikeStr + SeverityMax;
-	TMainW::SyslogTable->SQL->Text = SQLQuery;
-	TMainW::SyslogTable->SQL->Add("ORDER BY addedtime DESC");
-	//TMainW::SQLQuery->Caption = SQLQuery;
-	TMainW::SyslogTable->Active = true;
+	SyslogTable->SQL->Text = SQLQuery;
+	SyslogTable->SQL->Add("ORDER BY addedtime DESC");
+
+	/*
+	if(CBCacheoption->Checked){
+    	ShowMessage("Cache On!");
+		SyslogTable->FetchOptions->Mode = fmOnDemand;
+	}else{
+        ShowMessage("Cache Off!");
+        SyslogTable->FetchOptions->Mode = fmAll;
+	}
+    */
+	SyslogTable->FetchOptions->Mode = fmOnDemand;
+	//StatusBarSq->Panels->Items[1]->Text = SQLQuery;
+	SyslogTable->Active = true;
+	StatusBarSq->Panels->Items[1]->Text = "Record count: " + String(SyslogTable->RecordCount);
+
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainW::FormCreate(TObject *Sender)
 {
+	StatusBarSq->Panels->Items[0]->Text = "Disconnected";
 	TDateTime dt = Now();
 	dt = IncHour(dt, -1);
 	DateTimePickerFrom->DateTime = System::Sysutils::Now();
@@ -100,11 +128,11 @@ void __fastcall TMainW::FormCreate(TObject *Sender)
 	DateTimePickerFrom->Time = DateTimePickertFrom->Time;
 	DateTimePickertTo->Time = DateTimePickerTo->Time;
 
-		int CnCount = TMainW::FDManagerSyslog->ConnectionDefs->Count;
-		TMainW::FDManagerSyslog->Active = true;
+		int CnCount = FDManagerSyslog->ConnectionDefs->Count;
+		FDManagerSyslog->Active = true;
 		if(CnCount > 0){
 			for(int a = 0; a < CnCount; a++){
-				ConnectionSelect->Items->Add(TMainW::FDManagerSyslog->ConnectionDefs->Items[a]->Name);
+				ConnectionSelect->Items->Add(FDManagerSyslog->ConnectionDefs->Items[a]->Name);
 				ConnectionSelect->ItemIndex = 0;
 			}
 		}
@@ -115,7 +143,7 @@ void __fastcall TMainW::FormCreate(TObject *Sender)
 void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 {
 	TDateTime dt = Now();
-	switch(TMainW::IntervalSelectionCb->ItemIndex){
+	switch(IntervalSelectionCb->ItemIndex){
 		case 0: dt = IncMinute(dt, -10);
 		DateTimePickerTo->Enabled = false;
 		DateTimePickertTo->Enabled = false;
@@ -170,13 +198,14 @@ void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 
 void __fastcall TMainW::ConnectBtClick(TObject *Sender)
 {
-	TMainW::PgconnConnection->Connected = false;
+	PgconnConnection->Connected = false;
 	ButtonSearch->Enabled = false;
-	TMainW::PgconnConnection->ConnectionDefName = TMainW::FDManagerSyslog->ConnectionDefs->Items[ConnectionSelect->ItemIndex]->Name;
-	TMainW::PgconnConnection->Connected = true;
-	if(TMainW::PgconnConnection->Connected){
+	PgconnConnection->ConnectionDefName = FDManagerSyslog->ConnectionDefs->Items[ConnectionSelect->ItemIndex]->Name;
+	PgconnConnection->Connected = true;
+	if(PgconnConnection->Connected){
 		ButtonSearch->Enabled = true;
-		TMainW::ButtonSearchClick(this);
+		StatusBarSq->Panels->Items[0]->Text = "Connected";
+		ButtonSearchClick(this);
    }
 
 }
@@ -190,14 +219,16 @@ void __fastcall TMainW::SyslogMessageGridTitleClick(TColumn *Column)
 		cnSortDirection = " DESC";
 	}
 	System::String cnSort = "ORDER BY " + Column->FieldName + cnSortDirection;
-	System::String oldSql =  TMainW::SyslogTable->SQL->Text;
-	if(TMainW::SyslogTable->SQL->Count > 1){
-		TMainW::SyslogTable->Active = false;
-		TMainW::SyslogTable->SQL->Delete(TMainW::SyslogTable->SQL->Count - 1);
-		TMainW::SyslogTable->SQL->Add(cnSort);
-		TMainW::SyslogTable->Active = true;
+	System::String oldSql =  SyslogTable->SQL->Text;
+	if(SyslogTable->SQL->Count > 1){
+		SyslogTable->Active = false;
+		SyslogTable->SQL->Delete(SyslogTable->SQL->Count - 1);
+		SyslogTable->SQL->Add(cnSort);
+		SyslogTable->Active = true;
 	}
 
 }
 //---------------------------------------------------------------------------
+
+
 

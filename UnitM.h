@@ -30,6 +30,10 @@
 #include <Vcl.Grids.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.ComCtrls.hpp>
+#include <Vcl.Menus.hpp>
+#include <Vcl.AppEvnts.hpp>
+#include <System.Actions.hpp>
+#include <Vcl.ActnList.hpp>
 //---------------------------------------------------------------------------
 class TMainW : public TForm
 {
@@ -76,6 +80,14 @@ __published:	// IDE-managed Components
 	TCheckBox *CBHeaderExclude;
 	TCheckBox *CBBodyExclude;
 	TCheckBox *CBIPExclude;
+	TMainMenu *MainMenu;
+	TMenuItem *N1;
+	TMenuItem *Exit1;
+	TApplicationEvents *ApplicationEvents1;
+	TActionList *ActionList;
+	TAction *Action1;
+	TAction *Action2;
+	TMenuItem *Settingsfile1;
 	void __fastcall SyslogTablemsgbodyGetText(TField *Sender, UnicodeString &Text, bool DisplayText);
 	void __fastcall SyslogTableheadertextGetText(TField *Sender, UnicodeString &Text,
           bool DisplayText);
@@ -86,6 +98,13 @@ __published:	// IDE-managed Components
 	void __fastcall IntervalSelectionCbChange(TObject *Sender);
 	void __fastcall ConnectBtClick(TObject *Sender);
 	void __fastcall SyslogMessageGridTitleClick(TColumn *Column);
+	void __fastcall Exit1Click(TObject *Sender);
+	bool __fastcall ApplicationEvents1Help(WORD Command, NativeInt Data, bool &CallHelp);
+	void __fastcall Action1Execute(TObject *Sender);
+	void __fastcall Action2Execute(TObject *Sender);
+	void __fastcall ApplicationEvents1Activate(TObject *Sender);
+
+
 
 private:	// User declarations
 public:		// User declarations

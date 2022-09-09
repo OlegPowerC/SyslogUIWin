@@ -1,6 +1,8 @@
 object MainW: TMainW
   Left = 0
   Top = 0
+  HelpType = htKeyword
+  HelpKeyword = 'main'
   Caption = 'SyslogUI'
   ClientHeight = 643
   ClientWidth = 1279
@@ -81,8 +83,10 @@ object MainW: TMainW
     0000000000000000000000000000000000000000000000000000000000000000
     0000000000000000000000000000000000000000000000000000000000000000
     000000000000000000000000000000000000000000000000000000000000}
+  Menu = MainMenu
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnHelp = ApplicationEvents1Help
   PixelsPerInch = 96
   TextHeight = 13
   object SyslogMessageGrid: TDBGrid
@@ -116,7 +120,6 @@ object MainW: TMainW
       Align = alClient
       Caption = 'Filter'
       TabOrder = 0
-      ExplicitWidth = 1178
       object Label4: TLabel
         Left = 36
         Top = 19
@@ -280,7 +283,7 @@ object MainW: TMainW
         Top = 18
         Width = 75
         Height = 21
-        Caption = '&Connect'
+        Caption = 'Connect'
         TabOrder = 1
         OnClick = ConnectBtClick
       end
@@ -454,5 +457,39 @@ object MainW: TMainW
     VendorLib = 'libpq.dll'
     Left = 64
     Top = 208
+  end
+  object MainMenu: TMainMenu
+    Left = 345
+    Top = 209
+    object N1: TMenuItem
+      Action = Action1
+    end
+    object Settingsfile1: TMenuItem
+      Action = Action2
+      Caption = 'Settings file'
+    end
+    object Exit1: TMenuItem
+      Caption = 'Exit'
+      ShortCut = 121
+      OnClick = Exit1Click
+    end
+  end
+  object ApplicationEvents1: TApplicationEvents
+    OnActivate = ApplicationEvents1Activate
+    OnHelp = ApplicationEvents1Help
+    Left = 344
+    Top = 272
+  end
+  object ActionList: TActionList
+    Left = 248
+    Top = 272
+    object Action1: TAction
+      Caption = 'Help'
+      OnExecute = Action1Execute
+    end
+    object Action2: TAction
+      Caption = 'Action2'
+      OnExecute = Action2Execute
+    end
   end
 end

@@ -4,6 +4,7 @@
 #include <StrUtils.hpp>
 #include <map>
 #include <DateUtils.hpp>
+#include "ShellAPI.h"
 #pragma hdrstop
 
 #include "UnitM.h"
@@ -99,17 +100,7 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 	SyslogTable->SQL->Text = SQLQuery;
 	SyslogTable->SQL->Add("ORDER BY addedtime DESC");
 
-	/*
-	if(CBCacheoption->Checked){
-    	ShowMessage("Cache On!");
-		SyslogTable->FetchOptions->Mode = fmOnDemand;
-	}else{
-        ShowMessage("Cache Off!");
-        SyslogTable->FetchOptions->Mode = fmAll;
-	}
-    */
 	SyslogTable->FetchOptions->Mode = fmOnDemand;
-	//StatusBarSq->Panels->Items[1]->Text = SQLQuery;
 	SyslogTable->Active = true;
 	StatusBarSq->Panels->Items[1]->Text = "Record count: " + String(SyslogTable->RecordCount);
 
@@ -198,15 +189,29 @@ void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 
 void __fastcall TMainW::ConnectBtClick(TObject *Sender)
 {
-	PgconnConnection->Connected = false;
-	ButtonSearch->Enabled = false;
-	PgconnConnection->ConnectionDefName = FDManagerSyslog->ConnectionDefs->Items[ConnectionSelect->ItemIndex]->Name;
-	PgconnConnection->Connected = true;
 	if(PgconnConnection->Connected){
-		ButtonSearch->Enabled = true;
-		StatusBarSq->Panels->Items[0]->Text = "Connected";
-		ButtonSearchClick(this);
-   }
+		PgconnConnection->Connected = false;
+        StatusBarSq->Panels->Items[0]->Text = "Disconnect";
+		ConnectBt->Caption = "Connect";
+		TMenuItem* SettigsFileMenuItem = MainMenu->Items->Items[1];
+		SettigsFileMenuItem->Enabled = true;
+		ConnectionSelect->Enabled = true;
+	}else{
+		ButtonSearch->Enabled = false;
+		PgconnConnection->ConnectionDefName = FDManagerSyslog->ConnectionDefs->Items[ConnectionSelect->ItemIndex]->Name;
+		PgconnConnection->Connected = true;
+		if(PgconnConnection->Connected){
+			TMenuItem* SettigsFileMenuItem = MainMenu->Items->Items[1];
+			SettigsFileMenuItem->Enabled = false;
+			ButtonSearch->Enabled = true;
+			ConnectionSelect->Enabled = false;
+			StatusBarSq->Panels->Items[0]->Text = "Connected";
+			ButtonSearchClick(this);
+			ConnectBt->Caption = "Disconnect";
+		}
+	}
+
+	
 
 }
 //---------------------------------------------------------------------------
@@ -230,5 +235,56 @@ void __fastcall TMainW::SyslogMessageGridTitleClick(TColumn *Column)
 }
 //---------------------------------------------------------------------------
 
+
+
+void __fastcall TMainW::Exit1Click(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TMainW::ApplicationEvents1Help(WORD Command, NativeInt Data, bool &CallHelp)
+
+{
+	String TheFile = "SyslogUI.pdf";
+	ShellExecute(NULL, L"open",TheFile.c_str(),NULL, NULL, SW_SHOWNORMAL);
+	return true;
+}
+
+//---------------------------------------------------------------------------
+
+void __fastcall TMainW::Action1Execute(TObject *Sender)
+{
+  String TheFile = "SyslogUI.pdf";
+  ShellExecute(NULL, L"open",TheFile.c_str(),NULL, NULL, SW_SHOWNORMAL);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainW::Action2Execute(TObject *Sender)
+{
+	String Prog = "notepad.exe";
+	String TheFile = "dbsettings.ini";
+	ShellExecute(NULL, L"open", Prog.c_str(), TheFile.c_str(), NULL, SW_SHOWNORMAL);
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TMainW::ApplicationEvents1Activate(TObject *Sender)
+{
+		if(PgconnConnection->Connected == false){
+			FDManagerSyslog->Active = false;
+			int CnCount = FDManagerSyslog->ConnectionDefs->Count;
+			FDManagerSyslog->Active = true;
+			if(CnCount > 0){
+				ConnectionSelect->Items->Clear();
+				for(int a = 0; a < CnCount; a++){
+					ConnectionSelect->Items->Add(FDManagerSyslog->ConnectionDefs->Items[a]->Name);
+					ConnectionSelect->ItemIndex = 0;
+				}
+			}
+		}
+
+}
+//---------------------------------------------------------------------------
 
 

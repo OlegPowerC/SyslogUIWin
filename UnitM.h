@@ -34,6 +34,10 @@
 #include <Vcl.AppEvnts.hpp>
 #include <System.Actions.hpp>
 #include <Vcl.ActnList.hpp>
+#include <Xml.XMLDoc.hpp>
+#include <Xml.xmldom.hpp>
+#include <Xml.XMLIntf.hpp>
+#include <Vcl.Dialogs.hpp>
 //---------------------------------------------------------------------------
 class TMainW : public TForm
 {
@@ -88,6 +92,9 @@ __published:	// IDE-managed Components
 	TAction *Action1;
 	TAction *Action2;
 	TMenuItem *Settingsfile1;
+	TXMLDocument *XMLDocumentExport;
+	TButton *btnExport;
+	TSaveDialog *SaveDialogExport;
 	void __fastcall SyslogTablemsgbodyGetText(TField *Sender, UnicodeString &Text, bool DisplayText);
 	void __fastcall SyslogTableheadertextGetText(TField *Sender, UnicodeString &Text,
           bool DisplayText);
@@ -103,6 +110,7 @@ __published:	// IDE-managed Components
 	void __fastcall Action1Execute(TObject *Sender);
 	void __fastcall Action2Execute(TObject *Sender);
 	void __fastcall ApplicationEvents1Activate(TObject *Sender);
+	void __fastcall btnExportClick(TObject *Sender);
 
 
 

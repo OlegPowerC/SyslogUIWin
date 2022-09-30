@@ -191,6 +191,8 @@ void __fastcall TMainW::ConnectBtClick(TObject *Sender)
 {
 	if(PgconnConnection->Connected){
 		PgconnConnection->Connected = false;
+		ButtonSearch->Enabled = false;
+		btnExport->Enabled = false;
         StatusBarSq->Panels->Items[0]->Text = "Disconnect";
 		ConnectBt->Caption = "Connect";
 		TMenuItem* SettigsFileMenuItem = MainMenu->Items->Items[1];
@@ -204,6 +206,7 @@ void __fastcall TMainW::ConnectBtClick(TObject *Sender)
 			TMenuItem* SettigsFileMenuItem = MainMenu->Items->Items[1];
 			SettigsFileMenuItem->Enabled = false;
 			ButtonSearch->Enabled = true;
+            btnExport->Enabled = true;
 			ConnectionSelect->Enabled = false;
 			StatusBarSq->Panels->Items[0]->Text = "Connected";
 			ButtonSearchClick(this);
@@ -287,4 +290,52 @@ void __fastcall TMainW::ApplicationEvents1Activate(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainW::btnExportClick(TObject *Sender)
+{
+	if(SaveDialogExport->Execute())
+	{
+		if(SyslogTable->Active)
+		{
+			String FileNameAndPath = SaveDialogExport->FileName;
+			_di_IXMLDocument XmlExport = NewXMLDocument("1.0");
+			_di_IXMLNode Root = XmlExport->CreateNode("SyslogData",ntElement,L"");
+			XmlExport->SetDocumentElement(Root);
+
+			String ID,Time,IP,Severity,Facility,Header,Body;
+			SyslogTable->DisableControls();
+			SyslogTable->First();
+
+			for(SyslogTable->First();!SyslogTable->Eof;SyslogTable->Next()){
+				ID = SyslogTable->Fields->Fields[0]->AsString;
+				Time = SyslogTable->Fields->Fields[1]->AsString;
+				IP =  SyslogTable->Fields->Fields[2]->AsString;
+				Severity = SyslogTable->Fields->Fields[3]->AsString;
+				Facility = SyslogTable->Fields->Fields[4]->AsString;
+				Header = SyslogTable->Fields->Fields[5]->AsString;
+				Body = SyslogTable->Fields->Fields[6]->AsString;
+				_di_IXMLNode Node  = Root->AddChild("Record");
+				_di_IXMLNode ChildNodeID  = Node->AddChild("ID");
+				ChildNodeID->Text = ID;
+				_di_IXMLNode ChildNodeIP  = Node->AddChild("IP");
+				ChildNodeIP->Text = IP;
+				_di_IXMLNode ChildNodeTime  = Node->AddChild("Time");
+				ChildNodeTime->Text = Time;
+				_di_IXMLNode ChildNodeSeverity  = Node->AddChild("Severity");
+				ChildNodeSeverity->Text = Severity;
+				_di_IXMLNode ChildNodeFacility  = Node->AddChild("Facility");
+				ChildNodeFacility->Text = Facility;
+				_di_IXMLNode ChildNodeHeader  = Node->AddChild("Header");
+				ChildNodeHeader->Text = Header;
+				_di_IXMLNode ChildNodeBody  = Node->AddChild("Message");
+				ChildNodeBody->Text = Body;
+			}
+
+			SyslogTable->First();
+			SyslogTable->EnableControls();
+			XmlExport->SaveToFile(FileNameAndPath);
+		}
+		
+	}
+}
+//---------------------------------------------------------------------------
 

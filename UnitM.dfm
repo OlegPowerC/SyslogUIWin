@@ -222,14 +222,24 @@ object MainW: TMainW
       BevelOuter = bvNone
       TabOrder = 1
       object ButtonSearch: TButton
-        Left = 54
-        Top = 84
+        Left = 32
+        Top = 71
         Width = 75
         Height = 21
         Caption = '&Search'
         Enabled = False
         TabOrder = 0
         OnClick = ButtonSearchClick
+      end
+      object btnExport: TButton
+        Left = 32
+        Top = 16
+        Width = 75
+        Height = 21
+        Caption = 'Export'
+        Enabled = False
+        TabOrder = 1
+        OnClick = btnExportClick
       end
     end
   end
@@ -491,5 +501,15 @@ object MainW: TMainW
       Caption = 'Action2'
       OnExecute = Action2Execute
     end
+  end
+  object XMLDocumentExport: TXMLDocument
+    Left = 432
+    Top = 208
+  end
+  object SaveDialogExport: TSaveDialog
+    DefaultExt = 'xml'
+    Filter = '*.xml|*.xml'
+    Left = 440
+    Top = 272
   end
 end

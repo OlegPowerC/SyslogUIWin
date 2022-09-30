@@ -134,30 +134,18 @@ void __fastcall TMainW::FormCreate(TObject *Sender)
 void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 {
 	TDateTime dt = Now();
+	DateTimePickerTo->Enabled = false;
+	DateTimePickertTo->Enabled = false;
+	DateTimePickerFrom->Enabled = false;
+	DateTimePickertFrom->Enabled = false;
 	switch(IntervalSelectionCb->ItemIndex){
 		case 0: dt = IncMinute(dt, -10);
-		DateTimePickerTo->Enabled = false;
-		DateTimePickertTo->Enabled = false;
-		DateTimePickerFrom->Enabled = false;
-		DateTimePickertFrom->Enabled = false;
 		break;
 		case 1: dt = IncMinute(dt, -30);
-        DateTimePickerTo->Enabled = false;
-		DateTimePickertTo->Enabled = false;
-		DateTimePickerFrom->Enabled = false;
-		DateTimePickertFrom->Enabled = false;
 		break;
 		case 2: dt = IncHour(dt, -1);
-        DateTimePickerTo->Enabled = false;
-		DateTimePickertTo->Enabled = false;
-		DateTimePickerFrom->Enabled = false;
-		DateTimePickertFrom->Enabled = false;
 		break;
 		case 3: dt = IncHour(dt, -24);
-		DateTimePickerTo->Enabled = false;
-		DateTimePickertTo->Enabled = false;
-		DateTimePickerFrom->Enabled = false;
-		DateTimePickertFrom->Enabled = false;
 		break;
 		case 4: dt = IncMinute(dt, -10);
 		DateTimePickerTo->Enabled = true;
@@ -166,12 +154,8 @@ void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 		DateTimePickertFrom->Enabled = true;
 		break;
 		default:
-		DateTimePickerTo->Enabled = false;
-		DateTimePickertTo->Enabled = false;
-		DateTimePickerFrom->Enabled = false;
-		DateTimePickertFrom->Enabled = false;
+		break;
 	}
-
 
 	DateTimePickerFrom->DateTime = System::Sysutils::Now();
 	DateTimePickerTo->DateTime = System::Sysutils::Now();

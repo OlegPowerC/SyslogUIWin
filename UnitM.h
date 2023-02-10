@@ -95,6 +95,7 @@ __published:	// IDE-managed Components
 	TXMLDocument *XMLDocumentExport;
 	TButton *btnExport;
 	TSaveDialog *SaveDialogExport;
+	TComboBox *CBEqLike;
 	void __fastcall SyslogTablemsgbodyGetText(TField *Sender, UnicodeString &Text, bool DisplayText);
 	void __fastcall SyslogTableheadertextGetText(TField *Sender, UnicodeString &Text,
           bool DisplayText);

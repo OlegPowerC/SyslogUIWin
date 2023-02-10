@@ -120,6 +120,7 @@ object MainW: TMainW
       Align = alClient
       Caption = 'Filter'
       TabOrder = 0
+      ExplicitLeft = 2
       object Label4: TLabel
         Left = 36
         Top = 19
@@ -142,7 +143,7 @@ object MainW: TMainW
         Caption = 'IP'
       end
       object Label7: TLabel
-        Left = 381
+        Left = 532
         Top = 73
         Width = 86
         Height = 13
@@ -170,7 +171,7 @@ object MainW: TMainW
         TabOrder = 2
       end
       object SeverityMaxCb: TComboBox
-        Left = 473
+        Left = 624
         Top = 70
         Width = 145
         Height = 21
@@ -206,11 +207,23 @@ object MainW: TMainW
       end
       object CBIPExclude: TCheckBox
         Left = 279
-        Top = 72
+        Top = 70
         Width = 97
         Height = 17
         Caption = 'exclude'
         TabOrder = 6
+      end
+      object CBEqLike: TComboBox
+        Left = 344
+        Top = 70
+        Width = 49
+        Height = 21
+        ItemIndex = 0
+        TabOrder = 7
+        Text = 'Like'
+        Items.Strings = (
+          'Like'
+          'Equal')
       end
     end
     object Panel4: TPanel

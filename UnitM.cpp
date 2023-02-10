@@ -60,6 +60,7 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 	System::String BodyLikeStr = "";
 	System::String IpLikeStr = "";
 	System::String NotKeyW = "";
+	System::String IPLorE = "=";
 	System::String SeverityMax = " AND severity <= " + IntToStr(SeverityMaxCb->ItemIndex) + " ";
 	if(HeaderFinde->Text.Length() >= 2)
 	{
@@ -72,6 +73,7 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 
 	if(BodyFinde->Text.Length() >= 2)
 	{
+
 		if(CBBodyExclude->Checked){
 			NotKeyW = " NOT ";
 		}
@@ -82,9 +84,15 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 	{
 		if(CBIPExclude->Checked){
 			NotKeyW = " NOT ";
+            IPLorE = "<>";
 		}
-		IpLikeStr = " AND senderip " +NotKeyW+"LIKE '%" + SenderIpe->Text + "%' ";
-        NotKeyW = "";
+		if(CBEqLike->ItemIndex == 0) {
+		  IpLikeStr = " AND senderip " +NotKeyW+"LIKE '%" + SenderIpe->Text + "%' ";
+		}else{
+		   IpLikeStr = " AND senderip "+IPLorE+" '"  + SenderIpe->Text + "'";
+        }
+
+		NotKeyW = "";
 	}
 
 
@@ -99,6 +107,8 @@ void __fastcall TMainW::ButtonSearchClick(TObject *Sender)
 	System::String SQLQuery = "SELECT id,addedtime,senderip,severity,facility,headertext,msgbody FROM syslog WHERE addedtime BETWEEN '" +  SqlToParam + "' AND '" + SqlFromParam + "'"+ HeaderLikeStr + BodyLikeStr + IpLikeStr + SeverityMax;
 	SyslogTable->SQL->Text = SQLQuery;
 	SyslogTable->SQL->Add("ORDER BY addedtime DESC");
+
+	//ShowMessage(SQLQuery);
 
 	SyslogTable->FetchOptions->Mode = fmOnDemand;
 	SyslogTable->Active = true;
@@ -147,7 +157,9 @@ void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 		break;
 		case 3: dt = IncHour(dt, -24);
 		break;
-		case 4: dt = IncMinute(dt, -10);
+		case 4:
+		dt = DateTimePickerTo->DateTime;
+		//dt = IncMinute(dt, -10);
 		DateTimePickerTo->Enabled = true;
 		DateTimePickertTo->Enabled = true;
 		DateTimePickerFrom->Enabled = true;
@@ -161,7 +173,7 @@ void __fastcall TMainW::IntervalSelectionCbChange(TObject *Sender)
 	DateTimePickerTo->DateTime = System::Sysutils::Now();
 	DateTimePickertFrom->Time =   System::Sysutils::Now();
 	DateTimePickerTo->DateTime =   dt;
-	DateTimePickerFrom->Time = DateTimePickertFrom->Time;
+	DateTimePickertFrom->Time = DateTimePickertFrom->Time;
 	DateTimePickertTo->Time = DateTimePickerTo->Time;
 }
 //---------------------------------------------------------------------------
